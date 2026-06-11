@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revolver Flanger</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@300;400;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white: #f5f5f2;
+      --off-white: #e8e8e4;
+      --mid: #aaaaaa;
+      --dim: #666666;
+      --black: #111111;
+      --ink: #1a1a1a;
+    }
+
+    html, body {
+      background: var(--white);
+      color: var(--ink);
+      font-family: 'Courier Prime', 'Courier New', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── concentric ring background ── */
+    .rings {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+      width: 200vmax;
+      height: 200vmax;
+    }
+
+    .rings circle {
+      fill: none;
+      stroke: #c8c8c4;
+      stroke-width: 0.5;
+    }
+
+    /* ── layout ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 80px 32px 120px;
+    }
+
+    /* ── header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .title-revolver {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(52px, 10vw, 88px);
+      letter-spacing: 0.18em;
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    .title-flanger {
+      font-family: 'Courier Prime', monospace;
+      font-size: clamp(11px, 2vw, 14px);
+      letter-spacing: 0.55em;
+      color: var(--dim);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* ── spinning knob hero ── */
+    .knob-hero {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto 72px;
+      width: 200px;
+      height: 200px;
+    }
+
+    .knob-svg {
+      animation: slow-spin 30s linear infinite;
+    }
+
+    @keyframes slow-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .knob-svg { animation: none; }
+    }
+
+    /* ── tagline ── */
+    .tagline {
+      text-align: center;
+      font-family: 'Courier Prime', monospace;
+      font-size: 12px;
+      letter-spacing: 0.3em;
+      color: var(--dim);
+      text-transform: lowercase;
+      margin-bottom: 72px;
+    }
+
+    .tagline span {
+      margin: 0 8px;
+      color: var(--mid);
+    }
+
+    /* ── divider ── */
+    .rule {
+      border: none;
+      border-top: 1px solid var(--off-white);
+      margin: 0 0 56px;
+    }
+
+    /* ── parameter grid ── */
+    .section-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 10px;
+      letter-spacing: 0.5em;
+      color: var(--mid);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .param-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 28px 16px;
+      margin-bottom: 56px;
+    }
+
+    .param {
+      text-align: center;
+    }
+
+    .param-knob {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 8px;
+    }
+
+    .param-name {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+
+    /* ── description ── */
+    .description {
+      margin-bottom: 56px;
+      line-height: 1.85;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .description p + p {
+      margin-top: 20px;
+    }
+
+    /* ── mode toggle visual ── */
+    .mode-toggle {
+      display: inline-flex;
+      border: 1px solid var(--ink);
+      border-radius: 100px;
+      overflow: hidden;
+      margin-bottom: 56px;
+    }
+
+    .mode-toggle span {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      padding: 7px 18px;
+    }
+
+    .mode-toggle .active {
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .mode-toggle .inactive {
+      color: var(--dim);
+    }
+
+    /* ── download ── */
+    .download-section {
+      text-align: center;
+      padding-top: 16px;
+    }
+
+    .download-btn {
+      display: inline-block;
+      border: 1px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      font-family: 'Courier Prime', monospace;
+      font-size: 11px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      padding: 16px 40px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .download-btn:hover {
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .download-meta {
+      margin-top: 14px;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--mid);
+    }
+
+    /* ── footer ── */
+    .footer {
+      margin-top: 100px;
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--mid);
+    }
+
+    .footer a {
+      color: var(--mid);
+      text-decoration: none;
+      border-bottom: 1px solid var(--off-white);
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- concentric rings background -->
+<svg class="rings" viewBox="-1000 -1000 2000 2000" xmlns="http://www.w3.org/2000/svg">
+  <circle r="80"/><circle r="150"/><circle r="230"/><circle r="320"/>
+  <circle r="420"/><circle r="530"/><circle r="650"/><circle r="780"/>
+  <circle r="920"/><circle r="1080"/><circle r="1250"/><circle r="1430"/>
+  <circle r="1620"/><circle r="1820"/>
+</svg>
+
+<div class="page">
+
+  <header class="header">
+    <div class="title-revolver">REVOLVER</div>
+    <div class="title-flanger">Flanger</div>
+  </header>
+
+  <!-- spinning knob -->
+  <div class="knob-hero">
+    <svg class="knob-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- outer rings -->
+      <circle cx="100" cy="100" r="95" fill="none" stroke="#c8c8c4" stroke-width="1"/>
+      <circle cx="100" cy="100" r="82" fill="none" stroke="#c8c8c4" stroke-width="0.5"/>
+      <!-- knob body -->
+      <circle cx="100" cy="100" r="70" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+      <circle cx="100" cy="100" r="58" fill="#1a1a1a"/>
+      <!-- indicator dot -->
+      <circle cx="100" cy="48" r="4" fill="#f5f5f2"/>
+      <!-- small orbiting dots -->
+      <circle cx="142" cy="72" r="5" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+      <circle cx="58"  cy="72" r="5" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+      <circle cx="100" cy="148" r="5" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <p class="tagline">press <span>·</span> hold <span>·</span> release the tape</p>
+
+  <hr class="rule">
+
+  <!-- envelope params -->
+  <div class="section-label">Envelope</div>
+  <div class="param-grid">
+    <div class="param">
+      <svg class="param-knob" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><circle cx="22" cy="22" r="13" fill="none" stroke="#aaa" stroke-width="0.5"/><circle cx="22" cy="8" r="2" fill="#1a1a1a"/></svg>
+      <div class="param-name">Attack</div>
+    </div>
+    <div class="param">
+      <svg class="param-knob" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><circle cx="22" cy="22" r="13" fill="none" stroke="#aaa" stroke-width="0.5"/><circle cx="32" cy="12" r="2" fill="#1a1a1a"/></svg>
+      <div class="param-name">Decay</div>
+    </div>
+    <div class="param">
+      <svg class="param-knob" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><circle cx="22" cy="22" r="13" fill="none" stroke="#aaa" stroke-width="0.5"/><circle cx="34" cy="22" r="2" fill="#1a1a1a"/></svg>
+      <div class="param-name">Sustain</div>
+    </div>
+    <div class="param">
+      <svg class="param-knob" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><circle cx="22" cy="22" r="13" fill="none" stroke="#aaa" stroke-width="0.5"/><circle cx="30" cy="32" r="2" fill="#1a1a1a"/></svg>
+      <div class="param-name">Release</div>
+    </div>
+    <div class="param">
+      <svg class="param-knob" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><circle cx="22" cy="22" r="13" fill="none" stroke="#aaa" stroke-width="0.5"/><circle cx="22" cy="36" r="2" fill="#1a1a1a"/></svg>
+      <div class="param-name">Rate</div>
+    </div>
+  </div>
+
+  <!-- tone params -->
+  <div class="section-label">Tone</div>
+  <div class="param-grid">
+    <div class="param">
+      <svg class="param-knob" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><circle cx="22" cy="22" r="13" fill="none" stroke="#aaa" stroke-width="0.5"/><circle cx="10" cy="32" r="2" fill="#1a1a1a"/></svg>
+      <div class="param-name">Depth</div>
+    </div>
+    <div class="param">
+      <svg class="param-knob" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><circle cx="22" cy="22" r="13" fill="none" stroke="#aaa" stroke-width="0.5"/><circle cx="14" cy="14" r="2" fill="#1a1a1a"/></svg>
+      <div class="param-name">Manual</div>
+    </div>
+    <div class="param">
+      <svg class="param-knob" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><circle cx="22" cy="22" r="13" fill="none" stroke="#aaa" stroke-width="0.5"/><circle cx="22" cy="8" r="2" fill="#1a1a1a"/></svg>
+      <div class="param-name">Feedback</div>
+    </div>
+    <div class="param">
+      <svg class="param-knob" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><circle cx="22" cy="22" r="13" fill="none" stroke="#aaa" stroke-width="0.5"/><circle cx="34" cy="22" r="2" fill="#1a1a1a"/></svg>
+      <div class="param-name">Mix</div>
+    </div>
+    <div class="param">
+      <svg class="param-knob" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="#1a1a1a" stroke-width="1.5"/><circle cx="22" cy="22" r="13" fill="none" stroke="#aaa" stroke-width="0.5"/><circle cx="30" cy="12" r="2" fill="#1a1a1a"/></svg>
+      <div class="param-name">Stereo</div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="description">
+    <p>Revolver is a flanger built around an envelope-controlled delay line. The central rotary mechanism sweeps through comb filtering in two modes — LFO for continuous modulation, Manual for static placement — while the envelope section shapes how the effect responds to incoming signal.</p>
+    <p>Feedback pushes the comb into resonance. Stereo spreads the two channels apart in time, turning mono flanging into something that moves through a room. Mix blends wet and dry without affecting the envelope tracking.</p>
+    <p>Unsigned AU. macOS arm64. Built with JUCE.</p>
+  </div>
+
+  <!-- mode toggle -->
+  <div class="mode-toggle">
+    <span class="active">Manual</span>
+    <span class="inactive">LFO</span>
+  </div>
+
+  <hr class="rule">
+
+  <!-- download -->
+  <div class="download-section">
+    <a class="download-btn" href="RevolverFlanger.pkg" download>Download .pkg</a>
+    <div class="download-meta">macOS · arm64 · AU · unsigned · free</div>
+    <div class="download-meta" style="margin-top:6px;">allow in System Settings → Privacy & Security after install</div>
+  </div>
+
+  <footer class="footer">
+    <p>ebonski &nbsp;·&nbsp; <a href="https://github.com/ebonski" target="_blank">github</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
